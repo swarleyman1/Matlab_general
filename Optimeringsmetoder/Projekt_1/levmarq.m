@@ -1,7 +1,9 @@
 function [x,resnorm,residual] = levmarq(func, x0)
     t_data = [0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0];
     y_data = [7.2 3.0 1.5 0.85 0.48 0.25 0.20 0.15];
-    mu = 1; % Maybe?
+    lambda = 10; % Maybe?
+    nu = 2; % Above 1
+    % https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm#Choice_of_damping_parameter
     func = str2func(func);
     x = x0;
     x_data = [];
@@ -11,7 +13,7 @@ function [x,resnorm,residual] = levmarq(func, x0)
     while norm(F) > 0.0001 && i < 100
         i = i + 1;
         [F, gradF] = residualfunc(x);
-        A = gradF *gradF' + mu * eye(length(x));
+        A = gradF *gradF' + lambda * eye(length(x));
         b = -gradF*F;
         p = A\b;
         x = x+p;
@@ -36,7 +38,7 @@ function [x,resnorm,residual] = levmarq(func, x0)
 % 
 %             end
 %         end
-          gradr = [exp(xx(2)*t_data); xx(1)*xx(2)*exp(xx(2)*t_data)];
+          gradr = [exp(xx(2)*t_data); xx(1)*t_data.*exp(xx(2)*t_data)];
           r = func(xx, t_data, y_data)';
           
           
