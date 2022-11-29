@@ -3,6 +3,7 @@ function [x,resnorm,residual] = levmarq(func, x0)
     y_data = [7.2 3.0 1.5 0.85 0.48 0.25 0.20 0.15];
     lambda = 10; % Maybe?
     nu = 2; % Above 1
+
     % https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm#Choice_of_damping_parameter
     func = str2func(func);
     x = x0;
@@ -10,19 +11,20 @@ function [x,resnorm,residual] = levmarq(func, x0)
     %F = ones(length(t_data), 1);
     F = inf;
     i = 0;
-    while norm(F) > 0.0001 && i < 100
+    while norm(F) > 0.0001 && i < 10000
         i = i + 1;
-        [F, gradF] = residualfunc(x);
+        [F, gradF] = residualfunc_approx(x);
         A = gradF *gradF' + lambda * eye(length(x));
         b = -gradF*F;
         p = A\b;
         x = x+p;
         x_data(:,i) = x;
-        disp(p)
-        disp(x)
+        
+        %disp(p)
+        %disp(x)
         
     end
-    disp(i)
+    %disp(i)
     resnorm = norm(F);
     residual = F;
     figure(2)
@@ -31,16 +33,26 @@ function [x,resnorm,residual] = levmarq(func, x0)
         
         
     function [r,gradr]=residualfunc(xx)
-%         gradr = zeros(length(x), length(F));
-%         for i = 1:length(x)
-%             for j = length(F)
-%                 gradr(i,j) = 
-% 
-%             end
-%         end
-          gradr = [exp(xx(2)*t_data); xx(1)*t_data.*exp(xx(2)*t_data)];
-          r = func(xx, t_data, y_data)';
-          
-          
+        gradr = [exp(xx(2)*t_data); xx(1)*t_data.*exp(xx(2)*t_data)];
+        r = func(xx, t_data, y_data)';   
+        disp(gradr)
+    end
+
+    function [r, gradr] = residualfunc_approx(xx)
+        step = lambda/1000;
+        gradr = zeros(length(xx), length(t_data));
+        r = func(xx, t_data, y_data)'; 
+        for d = 1:length(xx)
+            x_plus = xx;
+            x_plus(d) = x_plus(d) + step;
+            x_minus = xx;
+            x_minus(d) = x_minus(d) - step;
+            values1 = func(x_plus, t_data, y_data);
+            values2 = func(x_minus, t_data, y_data);
+            
+            gradr(d,:) = (values1 - values2) ./(2*step);
+        end
+        
+        disp(gradr)
     end
 end
