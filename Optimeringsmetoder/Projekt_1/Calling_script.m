@@ -1,4 +1,4 @@
-%script som callar funktion
+%script som callar funktionen levmarq
 t_data = [0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0];
 y_data = [7.2 3.0 1.5 0.85 0.48 0.25 0.20 0.15];
 

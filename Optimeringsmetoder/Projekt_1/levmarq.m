@@ -1,20 +1,25 @@
-function [x,resnorm,residual] = levmarq(funcc, x0, gradientt)
+function [x,resnorm,residual] = levmarq(func, x0, gradient)
 
     if nargin >2
         residualfunc_name = @residualfunc;
+        gradient = str2func(gradient);
     else
         residualfunc_name = @residualfunc_approx;
     end
-    lambda = 10; % Maybe?
-    nu = 2; % Above 1
-
-    % https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm#Choice_of_damping_parameter
-    func = str2func(funcc);
+    func = str2func(func);
     x = x0;
+    
+    
+    tol = 0.1;
+    max_iter = 10000;
+    F = tol+1; % Initializing larger than tol
+    lambda = 10*norm(F); % Maybe?
+    %nu = 2; % Above 1
+
+    
     x_data = [];
-    F = inf;
     i = 0;
-    while norm(F) > 0.001 && i < 100000
+    while norm(F) > tol && i < max_iter
         i = i + 1;
         [F, gradF] = residualfunc_name(x);
         A = gradF *gradF' + lambda * eye(length(x));
@@ -22,17 +27,17 @@ function [x,resnorm,residual] = levmarq(funcc, x0, gradientt)
         p = A\b;
         x = x+p;
         x_data(:,i) = x;
-        
+        lambda = 10*norm(F);
     end
     resnorm = norm(F);
     residual = F;
 %     figure(2)
 %     plot(x_data(1,:),x_data(2,:)) % Path of the x-values
-        
+    
         
         
     function [r,gradr]=residualfunc(xx)
-        gradient = str2func(gradientt);
+
         gradr = gradient(xx);
         r = func(xx)';   
     end
