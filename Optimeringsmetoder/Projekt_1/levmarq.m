@@ -10,13 +10,13 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
     x = x0;
     
     
-    tol = 0.1;
+    tol = 0.2;
     max_iter = 10000;
     F = tol+1; % Initializing larger than tol
-    lambda = 10*norm(F); % Maybe?
+    lambda = 10; % Maybe?
     %nu = 2; % Above 1
 
-    
+    old_norm = 0;
     x_data = [];
     i = 0;
     while norm(F) > tol && i < max_iter
@@ -27,14 +27,18 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
         p = A\b;
         x = x+p;
         x_data(:,i) = x;
-        lambda = 10*norm(F);
+        lambda = 10/norm(F);
+        if abs(old_norm / norm(F)-1) < 0.1
+            lambda = lambda/2;
+        end
+        old_norm = norm(F);
     end
     resnorm = norm(F);
     residual = F;
 %     figure(2)
 %     plot(x_data(1,:),x_data(2,:)) % Path of the x-values
     
-        
+    i
         
     function [r,gradr]=residualfunc(xx)
 
