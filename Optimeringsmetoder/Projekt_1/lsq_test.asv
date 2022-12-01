@@ -4,7 +4,5 @@ function [err] = lsq_test (x)
     y = lsq_test_f(t_data, x(1), x(2));
     err = y - y_data;
     
-    function y = lsq_test_f(t, x1, x2)
-    y = x1 * exp(x2 * t);
-    end
+    
 end

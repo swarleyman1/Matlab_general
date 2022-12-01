@@ -10,3 +10,7 @@ hold on
 plot(t_data, y_data, 'rx')
 plot(tt, lsq_test_f(tt, x(1), x(2)), 'b-')
 hold off
+
+function y = lsq_test_f(t, x1, x2)
+y = x1 * exp(x2 * t);
+end

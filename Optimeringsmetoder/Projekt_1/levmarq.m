@@ -13,8 +13,7 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
     tol = 0.2;
     max_iter = 10000;
     F = tol+1; % Initializing larger than tol
-    lambda = 10; % Maybe?
-    %nu = 2; % Above 1
+    lambda = 10; % 
 
     old_norm = 0;
     x_data = [];
@@ -26,18 +25,20 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
         b = -gradF*F;
         p = A\b;
         x = x+p;
-        x_data(:,i) = x;
+        x_data(:,i) = x; % used for plotting the path of x-values
         lambda = 10/norm(F);
-        if abs(old_norm / norm(F)-1) < 0.1
+        if abs(old_norm / norm(F) - 1) < 0.1
             lambda = lambda/2;
         end
         old_norm = norm(F);
     end
     resnorm = norm(F);
     residual = F;
-%     figure(2)
-%     plot(x_data(1,:),x_data(2,:)) % Path of the x-values
     
+    figure(2)
+    title('Path of the x-values')
+    %plot(x_data(1,:),x_data(2,:)) % Path of the x-values
+    plot3(x_data(1,:),x_data(2,:),x_data(2,:))
     i
         
     function [r,gradr]=residualfunc(xx)
@@ -47,6 +48,8 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
     end
 
     function [r, gradr] = residualfunc_approx(xx)
+        % approximates the derivative in each dimension using the central
+        % difference numerical method
         step = lambda/1000;
         r = func(xx)'; 
         gradr = zeros(length(xx), length(r));
