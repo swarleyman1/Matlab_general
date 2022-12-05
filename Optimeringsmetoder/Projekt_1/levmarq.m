@@ -10,10 +10,10 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
     x = x0;
     
     
-    tol = 0.2;
+    tol = 0.5;
     max_iter = 10000;
     F = tol+1; % Initializing larger than tol
-    lambda = 10; % 
+    lambda = 10; 
 
     old_norm = 0;
     x_data = [];
@@ -38,9 +38,9 @@ function [x,resnorm,residual] = levmarq(func, x0, gradient)
     figure(2)
     title('Path of the x-values')
     %plot(x_data(1,:),x_data(2,:)) % Path of the x-values
-    plot3(x_data(1,:),x_data(2,:),x_data(2,:))
-    i
-        
+    plot3(x_data(1,:),x_data(2,:),x_data(3,:))
+    
+       
     function [r,gradr]=residualfunc(xx)
 
         gradr = gradient(xx);
